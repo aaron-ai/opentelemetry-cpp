@@ -14,4 +14,4 @@ target_link_libraries(
   opentelemetry_trace
   ${CORE_RUNTIME_LIBS}
   opentelemetry_exporter_otprotocol
-  gRPC::grpc++)
+  grpc++)
