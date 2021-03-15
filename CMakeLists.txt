@@ -124,6 +124,19 @@ endif()
 # GNUInstallDirs.
 include(GNUInstallDirs)
 
+include(FetchContent)
+
+FetchContent_Declare(
+        gRPC
+        GIT_REPOSITORY https://github.com/grpc/grpc.git
+        GIT_TAG v1.30.2
+)
+
+FetchContent_MakeAvailable(gRPC)
+
+set(_REFLECTION grpc++_reflection)
+set(_GRPC_GRPCPP grpc++)
+
 if(WITH_OTLP)
   set(protobuf_MODULE_COMPATIBLE ON)
   find_package(Protobuf)
@@ -141,10 +154,10 @@ if(WITH_OTLP)
     endif()
 
     if(NOT protobuf_FOUND)
-      find_package(Protobuf REQUIRED)
+      find_package(Protobuf)
     endif()
     if(NOT gRPC_FOUND)
-      find_package(gRPC REQUIRED)
+      find_package(gRPC)
     endif()
     if(WIN32)
       # Always use x64 protoc.exe
