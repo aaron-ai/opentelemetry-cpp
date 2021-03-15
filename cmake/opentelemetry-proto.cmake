@@ -82,7 +82,9 @@ foreach(IMPORT_DIR ${PROTOBUF_IMPORT_DIRS})
   list(APPEND PROTOBUF_INCLUDE_FLAGS "-I${IMPORT_DIR}")
 endforeach()
 
-set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
+set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
+
+set(PROTOBUF_PROTOC_EXECUTABLE $<TARGET_FILE:protoc>)
 
 add_custom_command(
   OUTPUT ${COMMON_PB_H_FILE}
@@ -141,13 +143,79 @@ install(
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(
+  TARGETS ${_REFLECTION}
+  EXPORT "${PROJECT_NAME}-target"
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(
+  TARGETS  ${_GRPC_GRPCPP}
+  EXPORT "${PROJECT_NAME}-target"
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+set(gRPC_ABSL_USED_TARGETS
+  absl_algorithm
+  absl_atomic_hook
+  absl_bad_optional_access
+  absl_base
+  absl_base_internal
+  absl_bits
+  absl_civil_time
+  absl_compressed_tuple
+  absl_config
+  absl_core_headers
+  absl_dynamic_annotations
+  absl_endian
+  absl_errno_saver
+  absl_inlined_vector
+  absl_inlined_vector_internal
+  absl_int128
+  absl_log_severity
+  absl_memory
+  absl_optional
+  absl_raw_logging_internal
+  absl_span
+  absl_spinlock_wait
+  absl_str_format
+  absl_str_format_internal
+  absl_strings
+  absl_strings_internal
+  absl_throw_delegate
+  absl_time
+  absl_time_zone
+  absl_type_traits
+  absl_utility
+  absl_meta
+)
+
+install(
+  TARGETS grpc gpr address_sorting upb ssl zlibstatic c-ares crypto
+  EXPORT "${PROJECT_NAME}-target"
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(
+  TARGETS ${gRPC_ABSL_USED_TARGETS}
+  EXPORT "${PROJECT_NAME}-target"
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(
   DIRECTORY ${GENERATED_PROTOBUF_PATH}/opentelemetry
   DESTINATION include
   FILES_MATCHING
   PATTERN "*.h")
 
 if(TARGET protobuf::libprotobuf)
-  target_link_libraries(opentelemetry_proto PUBLIC protobuf::libprotobuf)
+  target_link_libraries(opentelemetry_proto
+                        PUBLIC protobuf::libprotobuf
+                        ${_REFLECTION}
+                        ${_GRPC_GRPCPP})
 else() # cmake 3.8 or lower
   target_include_directories(opentelemetry_proto
                              PUBLIC ${Protobuf_INCLUDE_DIRS})
