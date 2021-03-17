@@ -165,6 +165,19 @@ foreach(IMPORT_DIR ${PROTOBUF_IMPORT_DIRS})
   list(APPEND PROTOBUF_INCLUDE_FLAGS "-I${IMPORT_DIR}")
 endforeach()
 
+include(FetchContent)
+
+FetchContent_Declare(
+        gRPC
+        GIT_REPOSITORY https://github.com/grpc/grpc.git
+        GIT_TAG v1.30.2
+)
+
+FetchContent_MakeAvailable(gRPC)
+
+set(_REFLECTION grpc++_reflection)
+set(_GRPC_GRPCPP grpc++)
+
 set(gRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:grpc_cpp_plugin>)
 
 set(PROTOBUF_PROTOC_EXECUTABLE $<TARGET_FILE:protoc>)
