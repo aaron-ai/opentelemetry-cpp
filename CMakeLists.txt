@@ -73,7 +73,7 @@ if(WITH_STL)
   endif()
 endif()
 
-option(WITH_OTLP "Whether to include the OpenTelemetry Protocol in the SDK" OFF)
+option(WITH_OTLP "Whether to include the OpenTelemetry Protocol in the SDK" ON)
 
 option(WITH_PROMETHEUS "Whether to include the Prometheus Client in the SDK"
        OFF)
@@ -81,7 +81,7 @@ option(WITH_PROMETHEUS "Whether to include the Prometheus Client in the SDK"
 option(WITH_ELASTICSEARCH
        "Whether to include the Elasticsearch Client in the SDK" OFF)
 
-option(BUILD_TESTING "Whether to enable tests" ON)
+option(BUILD_TESTING "Whether to enable tests" OFF)
 if(WIN32)
   option(WITH_ETW "Whether to include the ETW Exporter in the SDK" ON)
   if(WITH_ETW)
@@ -126,54 +126,8 @@ endif()
 # GNUInstallDirs.
 include(GNUInstallDirs)
 
-include(FetchContent)
-
-FetchContent_Declare(
-        gRPC
-        GIT_REPOSITORY https://github.com/grpc/grpc.git
-        GIT_TAG v1.30.2
-)
-
-FetchContent_MakeAvailable(gRPC)
-
-set(_REFLECTION grpc++_reflection)
-set(_GRPC_GRPCPP grpc++)
-
 if(WITH_OTLP)
   set(protobuf_MODULE_COMPATIBLE ON)
-  find_package(Protobuf)
-  find_package(gRPC)
-  if((NOT protobuf_FOUND) OR (NOT gRPC_FOUND))
-    if(WIN32 AND (NOT DEFINED CMAKE_TOOLCHAIN_FILE))
-      install_windows_deps()
-    endif()
-
-    if(WIN32 AND (NOT DEFINED CMAKE_TOOLCHAIN_FILE))
-      message(STATUS_FATAL "Windows dependency installation failed!")
-    endif()
-    if(WIN32)
-      include(${CMAKE_TOOLCHAIN_FILE})
-    endif()
-
-    if(NOT protobuf_FOUND)
-      find_package(Protobuf)
-    endif()
-    if(NOT gRPC_FOUND)
-      find_package(gRPC)
-    endif()
-    if(WIN32)
-      # Always use x64 protoc.exe
-      if(NOT EXISTS "${Protobuf_PROTOC_EXECUTABLE}")
-        set(Protobuf_PROTOC_EXECUTABLE
-            ${CMAKE_CURRENT_SOURCE_DIR}/tools/vcpkg/packages/protobuf_x64-windows/tools/protobuf/protoc.exe
-        )
-      endif()
-    endif()
-    # Latest Protobuf uses mixed case instead of uppercase
-    set(PROTOBUF_PROTOC_EXECUTABLE ${Protobuf_PROTOC_EXECUTABLE})
-  endif()
-  message("PROTOBUF_PROTOC_EXECUTABLE=${PROTOBUF_PROTOC_EXECUTABLE}")
-
   include(cmake/opentelemetry-proto.cmake)
 endif()
 
