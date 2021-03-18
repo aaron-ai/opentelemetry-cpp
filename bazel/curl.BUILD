@@ -1,6 +1,6 @@
 # Builds CURL from a distribution.
 
-load("@io_opentelemetry_cpp//bazel:curl.bzl", "CURL_COPTS")
+load("@//bazel:curl.bzl", "CURL_COPTS")
 
 package(features = ["no_copts_tokenization"])
 
