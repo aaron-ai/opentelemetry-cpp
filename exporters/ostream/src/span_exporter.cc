@@ -84,6 +84,13 @@ sdk::common::ExportResult OStreamSpanExporter::Export(
   return sdk::common::ExportResult::kSuccess;
 }
 
+sdk::common::ExportResult OStreamSpanExporter::Export(
+    const nostd::span<std::unique_ptr<sdktrace::Recordable>> &spans,
+    std::function<std::map<std::string, std::string>()> &func) noexcept
+{
+  return Export(spans);
+}
+
 bool OStreamSpanExporter::Shutdown(std::chrono::microseconds timeout) noexcept
 {
   isShutdown_ = true;

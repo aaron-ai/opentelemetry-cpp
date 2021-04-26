@@ -59,6 +59,10 @@ public:
   sdk::common::ExportResult Export(
       const nostd::span<std::unique_ptr<sdk::trace::Recordable>> &spans) noexcept override;
 
+  sdk::common::ExportResult Export(
+      const nostd::span<std::unique_ptr<sdk::trace::Recordable>> &spans,
+      std::function<std::map<std::string, std::string>()> &func) noexcept override;
+
   /**
    * Shut down the exporter.
    * @param timeout an optional timeout, the default timeout of 0 means that no

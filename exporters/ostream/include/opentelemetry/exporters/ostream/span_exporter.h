@@ -37,6 +37,10 @@ public:
   sdk::common::ExportResult Export(
       const nostd::span<std::unique_ptr<sdktrace::Recordable>> &spans) noexcept override;
 
+  sdk::common::ExportResult Export(
+      const nostd::span<std::unique_ptr<sdk::trace::Recordable>> &spans,
+      std::function<std::map<std::string, std::string>()> &func) noexcept override;
+
   bool Shutdown(
       std::chrono::microseconds timeout = std::chrono::microseconds::max()) noexcept override;
 

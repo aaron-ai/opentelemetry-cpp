@@ -17,6 +17,7 @@ BatchSpanProcessor::BatchSpanProcessor(std::unique_ptr<SpanExporter> &&exporter,
       max_queue_size_(options.max_queue_size),
       schedule_delay_millis_(options.schedule_delay_millis),
       max_export_batch_size_(options.max_export_batch_size),
+      func_(options.func),
       buffer_(max_queue_size_),
       worker_thread_(&BatchSpanProcessor::DoBackgroundWork, this)
 {}
@@ -153,7 +154,8 @@ void BatchSpanProcessor::Export(const bool was_force_flush_called)
                     });
                   });
 
-  exporter_->Export(nostd::span<std::unique_ptr<Recordable>>(spans_arr.data(), spans_arr.size()));
+  exporter_->Export(nostd::span<std::unique_ptr<Recordable>>(spans_arr.data(), spans_arr.size()),
+                    func_);
 
   // Notify the main thread in case this export was the result of a force flush.
   if (was_force_flush_called == true)

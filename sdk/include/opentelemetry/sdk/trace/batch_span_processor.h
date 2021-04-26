@@ -34,6 +34,9 @@ struct BatchSpanProcessorOptions
    * equal to max_queue_size.
    */
   size_t max_export_batch_size = 512;
+
+  std::function<std::map<std::string, std::string>()> func =
+      []() -> std::map<std::string, std::string> { return std::map<std::string, std::string>(); };
 };
 
 /**
@@ -133,6 +136,7 @@ private:
   const size_t max_queue_size_;
   const std::chrono::milliseconds schedule_delay_millis_;
   const size_t max_export_batch_size_;
+  std::function<std::map<std::string, std::string>()> func_;
 
   /* Synchronization primitives */
   std::condition_variable cv_, force_flush_cv_;

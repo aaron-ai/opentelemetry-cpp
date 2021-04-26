@@ -106,6 +106,34 @@ sdk::common::ExportResult OtlpExporter::Export(
   }
   return sdk::common::ExportResult::kSuccess;
 }
+
+sdk::common::ExportResult OtlpExporter::Export(
+    const nostd::span<std::unique_ptr<sdk::trace::Recordable>> &spans,
+    std::function<std::map<std::string, std::string>()> &func) noexcept
+{
+  proto::collector::trace::v1::ExportTraceServiceRequest request;
+
+  PopulateRequest(spans, &request);
+
+  grpc::ClientContext context;
+  std::map<std::string, std::string> metadata = func();
+  for (auto iter = metadata.begin(); iter != metadata.end(); iter++)
+  {
+    context.AddMetadata(iter->first, iter->second);
+  }
+
+  proto::collector::trace::v1::ExportTraceServiceResponse response;
+
+  grpc::Status status = trace_service_stub_->Export(&context, request, &response);
+
+  if (!status.ok())
+  {
+    std::cerr << "[OTLP Exporter] Export() failed: " << status.error_message() << "\n";
+    return sdk::common::ExportResult::kFailure;
+  }
+  return sdk::common::ExportResult::kSuccess;
+}
+
 }  // namespace otlp
 }  // namespace exporter
 OPENTELEMETRY_END_NAMESPACE

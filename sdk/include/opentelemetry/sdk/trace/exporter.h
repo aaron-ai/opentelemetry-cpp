@@ -39,6 +39,10 @@ public:
       const nostd::span<std::unique_ptr<opentelemetry::sdk::trace::Recordable>>
           &spans) noexcept = 0;
 
+  virtual sdk::common::ExportResult Export(
+      const nostd::span<std::unique_ptr<sdk::trace::Recordable>> &spans,
+      std::function<std::map<std::string, std::string>()> &func) noexcept = 0;
+
   /**
    * Shut down the exporter.
    * @param timeout an optional timeout.
