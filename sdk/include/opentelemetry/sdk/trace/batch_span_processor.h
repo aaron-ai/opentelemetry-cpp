@@ -36,7 +36,7 @@ struct BatchSpanProcessorOptions
   size_t max_export_batch_size = 512;
 
   std::function<std::map<std::string, std::string>()> func =
-      []() -> std::map<std::string, std::string> { return std::map<std::string, std::string>(); };
+      []() { return std::map<std::string, std::string>(); };
 };
 
 /**
