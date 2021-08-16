@@ -45,3 +45,6 @@
 .buildtools
 
 _build
+
+cmake-build-debug
+.idea

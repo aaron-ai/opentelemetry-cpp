@@ -52,6 +52,12 @@ public:
     return sdk::common::ExportResult::kSuccess;
   }
 
+  sdk::common::ExportResult Export(
+    const nostd::span<std::unique_ptr<sdk::trace::Recordable>> &recordables, std::function<std::map<std::string, std::string>()> &func) noexcept override
+  {
+    return this->Export(recordables);
+  }
+
   /**
    * @param timeout an optional value containing the timeout of the exporter
    * note: passing custom timeout values is not currently supported for this exporter
